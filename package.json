@@ -1,0 +1,16 @@
+{
+  "name": "fu-wen-ben",
+  "version": "0.0.1",
+  "description": "test ueditor in nodejs",
+  "author": "yike",
+  "dependencies": {
+    "express": "^4.16.4",
+    "json3": "^3.3.2",
+    "express-handlebars": "^3.0.0",
+    "formidable": "^1.2.1"
+  },
+  "devDependencies": {
+    "imageinfo": "^1.0.4",
+    "multer": "^1.4.1"
+  }
+}
