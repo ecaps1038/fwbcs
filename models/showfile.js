@@ -49,8 +49,9 @@ exports.showimgFiles = function(req,res,path){
 }
 //删除对应文件
 exports.delFile = function(res,path){  
-
-	fs.unlinkSync(path);  
+    path.map(function(ver){
+	   fs.unlinkSync(ver); 
+    });
   
     res.json({
 		code:200,

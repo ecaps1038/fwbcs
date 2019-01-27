@@ -45,6 +45,7 @@ app.use(bodyparser.urlencoded({extended:false}));
 
 //汇总路由文件routes.js
 require('./routes/home.js')(app);
+require('./routes/fwb.js')(app);
 //定制404页
 app.use(function(req,res,next){
 	res.status(404);

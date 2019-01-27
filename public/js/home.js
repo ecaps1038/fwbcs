@@ -17,17 +17,12 @@
                 success: function(data){
                     if(200 === data.code) {
                         $('#result').html("上传成功！");
-                        data.data.map(function(ver){
-                                
-                                console.log(ver);
-                                fileSent();
-                                //html += '<img src="/upload/'+ver+'" />';
-                            });
-                        //$('.img').html(html);
+                        $('#file').val('');
+                        fileSent();
                     } else {
                         $('#result').html("上传失败！");
                     }
-                    console.log('imgUploader upload success');
+                    //console.log('imgUploader upload success');
                 },
                 error: function(){
                     $("#result").html("与服务器通信发生错误");
@@ -41,48 +36,13 @@
                 uploadFile();
             },false);
         }
-        //测试获取file内容
-        function fileSent(){
-            var html = '';
-           $.ajax({
-                url: '/showfile',
-                type: 'POST',
-                data: {path:'./public/upload/'},
-                success: function(data){
-                    if(200 === data.code) {
-                        var patt1 = /\.(\w+)/;
-                        data.data.map(function(ver){
-                            var aa = ver.filename.match(patt1)[1];
-                            if(aa == 'jpg' || aa == 'png' || aa == 'jepg'){
-                            html += '<li><img src="/upload/'+ver.filename+'" style="width:100px"/>'+
-                                '<p data-tile="'+ver.path+ver.filename+'"></p>'+
-                                '<button class="delete">删除</button></li>';
-                            }
-                            if(aa == 'mp4'){
-                                html += '<li><video id="video" width="120" src="/upload/'+ver.filename+'" controls="controls"></video>'+
-                                '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
-                                '<button class="delete">删除</button></li>';
-                            }
-                            if(aa == 'doc' || aa == 'docx'){
-                                html += '<li><img src="images/word.png" style="width:100px"/>'+
-                                '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
-                                '<button class="delete">删除</button></li>';
-                            }
-                        })
-                    }
-                    $('.files').html(html);
-                },
-                error: function(){
-                    $("#result").html("与服务器通信发生错误");
-                }
-           });
-        }
 
         //删除文件
         function deleteFile(){
+            var path = [];
             $('body').on('click','.delete',function(){
                 var that = $(this);
-                var path = that.prev('p').attr('data-tile');
+                path[0] = that.prev('p').attr('data-tile');
                 $.ajax({
                     url: '/delfile',
                     type: 'POST',
@@ -98,11 +58,73 @@
                 })
             });
         }
+
+        //选择
+        function selectFuc(){
+            var i = 0;
+            $('body').on('click','.files .select',function(){
+                var that = $(this);
+                if(that.parent('li').hasClass('selected')){
+                    that.parent('li').removeClass('selected');
+                    i --;
+                }else{
+                    that.parent('li').addClass('selected');
+                    i++
+                }
+                if(i>0){
+                    var html = '已选择'+i+'项内容';
+                    $('.hav-sele').html(html);
+                    $('.select-head').css('display','block');
+                }else{
+                    $('.select-head').css('display','none');
+                }
+            });
+            $('.giveup').on('click',function(){
+                $('.select-head').css('display','none');
+                $('.files ul li').each(function(){
+                    var that = $(this);
+                    if(that.hasClass('selected')){
+                        that.removeClass('selected');
+                        i --;
+                    }
+                })
+            });
+
+            //删除多个文件
+            $('body').on('click','.delect-sele',function(){
+                var j = 0;
+                var path = [];
+                $('.files ul li').each(function(){
+                    var that = $(this);
+                    if(that.hasClass('selected')){
+                        var val = that.find('p').attr('data-tile');
+                        path[j] = val;
+                        j++;
+                    }
+                });
+                $.ajax({
+                    url: '/delfile',
+                    type: 'POST',
+                    data: {path:path},
+                    success: function(data){
+                        if(200 === data.code){
+                            fileSent();
+                            $('.select-head').css('display','none');
+                            i=0;
+                        }
+                    },
+                    error: function(){
+                        $("#result").html("与服务器通信发生错误");
+                    }
+                });
+            });
+        }
         
         window.onload = function () {
             postPage();
             fileSent();
             deleteFile();
+            selectFuc();
         }
     })
 })(jQuery,window,document);
