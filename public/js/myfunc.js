@@ -75,8 +75,8 @@ function fileSelect(){
 function selectFuc(){
     var i = 0;
     var that = $(this);
-    if(that.parents('li').hasClass('selected')){
-        that.parents('li').removeClass('selected');
+    if(that.parent('li').hasClass('selected')){
+        that.parent('li').removeClass('selected');
         i --;
     }else{
         that.parent('li').addClass('selected');

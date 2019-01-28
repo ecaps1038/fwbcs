@@ -2818,7 +2818,6 @@ Image.prototype = {
                     selectFuc();
                     
                     
-                    
                     // 返回 true 表示函数执行结束之后关闭 panel
                     return false;
                 }
