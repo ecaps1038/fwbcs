@@ -5,7 +5,7 @@
             var file = document.getElementById("file")
             var formData = new FormData();
             for(var i in file.files){//这里如果单张上传就不必遍历直接formData.append('file',file.files[0])
-                    formData.append('file',file.files[i]);
+                   formData.append('file',file.files[i]);
             }
             $.ajax({
                 url: '/upload',

@@ -2664,8 +2664,8 @@ Image.prototype = {
         if (this._active) {
             this._createEditPanel();
         } else {
-            this._createInsertPanel();
             fileSelect();
+            this._createInsertPanel();
         }
     },
 
@@ -2794,32 +2794,23 @@ Image.prototype = {
         }, // first tab end
         {
             title: '插入文件',
-            tpl: '<div class="upimg"><div class="files"><div class="select-head"><i class="select-all"></i><span class="hav-sele">一选择了0个</span><span class="giveup">取消选择</span><span class="delect-sele">删除已选</span></div><ul></ul></div><input id="' + linkUrlId + '" type="text" class="block" placeholder="\u56FE\u7247\u94FE\u63A5"/></td>\n  <div class="w-e-button-container">\n  <button id="' + linkBtnId + '" class="right">\u63D2\u5165</button>\n  </div>\n  </div>',
+            tpl: '<div class="upimg"><div class="files"><ul id="filesul"></ul></div><div class="load-file"><input type="file" name="file" id="file" multiple="multiple"><button id="upload">上传</button></div><input id="' + linkUrlId + '" type="hidden" class="block" placeholder="\u56FE\u7247\u94FE\u63A5"/></td>\n  <div class="w-e-button-container">\n  <button id="' + linkBtnId + '" class="right">\u63D2\u5165</button>\n  </div>\n  </div>',
             events: [{
                 selector: '#' + linkBtnId,
                 type: 'click',
                 fn: function fn() {
                     var $linkUrl = $('#' + linkUrlId);
                     var url = $linkUrl.val().trim();
+                    //清空链接
+                    $linkUrl.val('');
 
                     if (url) {
-                        uploadImg.insertLinkImg(url);
+                        //uploadImg.insertLinkImg(url);
+                        uploadImg.insertLinkImgMore(url);
                     }
 
                     // 返回 true 表示函数执行结束之后关闭 panel
                     return true;
-                }
-            },
-            {
-                selector: '.files',
-                type: 'click',
-                list: 'ul li .select',
-                fn: function fn() {
-                    selectFuc();
-                    
-                    
-                    // 返回 true 表示函数执行结束之后关闭 panel
-                    return false;
                 }
             }
             ]
@@ -2839,7 +2830,7 @@ Image.prototype = {
 
         // 创建 panel 并显示
         var panel = new Panel(this, {
-            width: 640,
+            width: 620,
             tabs: tabsConfigResult
         });
         panel.show();
@@ -4052,7 +4043,7 @@ UploadImg.prototype = {
         }
     },
 
-    // 根据链接插入图片
+    // 根据链接插入图片一张
     insertLinkImg: function insertLinkImg(link) {
         var _this2 = this;
 
@@ -4096,6 +4087,25 @@ UploadImg.prototype = {
             img = null;
         };
         img.src = link;
+    },
+    // 根据链接插入多张图片 yike
+    insertLinkImgMore: function insertLinkImgMore(link) {
+        var _this2 = this;
+        var html = '';
+
+        if (!link) {
+            return;
+        }
+        var editor = this.editor;
+        var config = editor.config;
+        var a=link.split(",");
+
+        a.map(function(ver){
+            html += '<img src="'+ver+'" style="max-width:100%;"/>'
+        })
+
+        editor.cmd.do('insertHTML', html);
+
     },
 
     // 上传图片

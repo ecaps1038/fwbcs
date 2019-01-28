@@ -28,15 +28,18 @@ function fileSent(){
                 })
             }
             $('.files ul').html(html);
+            reverse();
         },
         error: function(){
             $("#result").html("与服务器通信发生错误");
         }
    });
 }
+
 //获取file内容并选择
 function fileSelect(){
     var html = '';
+    var path = '/upload/';
    $.ajax({
         url: '/showfile',
         type: 'POST',
@@ -48,22 +51,25 @@ function fileSelect(){
                     var aa = ver.filename.match(patt1)[1];
                     if(aa == 'jpg' || aa == 'png' || aa == 'jpeg'){
                     html += '<li><div class="img"><img src="/upload/'+ver.filename+'"/></div>'+
-                        '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                        '<p>'+ver.filename+'</p>'+
                         '<i class="select"></i></li>';
                     }
                     if(aa == 'mp4'){
                         html += '<li><div class="video"><video id="video" src="/upload/'+ver.filename+'" controls="controls"></video></div>'+
-                        '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                        '<p>'+ver.filename+'</p>'+
                         '<i class="select"></i></li>';
                     }
                     if(aa == 'doc' || aa == 'docx'){
                         html += '<li><div class="img"><img src="images/word.png"/></div>'+
-                        '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                        '<p>'+ver.filename+'</p>'+
                         '<i class="select"></i></li>';
                     }
                 })
             }
             $('.files ul').html(html);
+            reverse();
+            selectFuc(path);
+            postPage();
         },
         error: function(){
             $("#result").html("与服务器通信发生错误");
@@ -72,30 +78,9 @@ function fileSelect(){
 }
 
 //选择
-function selectFuc(){
+function selectFuc(path){
     var i = 0;
-    var that = $(this);
-    if(that.parent('li').hasClass('selected')){
-        that.parent('li').removeClass('selected');
-        i --;
-    }else{
-        that.parent('li').addClass('selected');
-        i++
-    }
-    if(i>0){
-        var html = '已选择'+i+'项内容';
-        $('.hav-sele').html(html);
-        $('.select-head').css('display','block');
-    }else{
-        $('.select-head').css('display','none');
-    }
-}
-
-//选择
-function selectFuc1(){
-    var i = 0;
-    $('body').on('click','.files .select',function(){
-    	alert('aaa')
+    $('.files').on('click','.select',function(){
         var that = $(this);
         if(that.parent('li').hasClass('selected')){
             that.parent('li').removeClass('selected');
@@ -104,51 +89,71 @@ function selectFuc1(){
             that.parent('li').addClass('selected');
             i++
         }
-        if(i>0){
-            var html = '已选择'+i+'项内容';
-            $('.hav-sele').html(html);
-            $('.select-head').css('display','block');
-        }else{
-            $('.select-head').css('display','none');
-        }
-    });
-    $('.giveup').on('click',function(){
-        $('.select-head').css('display','none');
-        $('.files ul li').each(function(){
-            var that = $(this);
-            if(that.hasClass('selected')){
-                that.removeClass('selected');
-                i --;
-            }
-        })
-    });
-
-    //删除多个文件
-    $('body').on('click','.delect-sele',function(){
         var j = 0;
-        var path = [];
+        var paths = [];
+        var html = '';
         $('.files ul li').each(function(){
             var that = $(this);
             if(that.hasClass('selected')){
-                var val = that.find('p').attr('data-tile');
-                path[j] = val;
+                var val = path+that.find('p').text();
+                paths[j] = val;
                 j++;
+                //html+=path+that.find('p').text();
             }
         });
-        $.ajax({
-            url: '/delfile',
-            type: 'POST',
-            data: {path:path},
-            success: function(data){
-                if(200 === data.code){
-                    fileSent();
-                    $('.select-head').css('display','none');
-                    i=0;
-                }
-            },
-            error: function(){
-                $("#result").html("与服务器通信发生错误");
-            }
-        });
-    });
+        $('.upimg').find('.block').val(paths);
+        
+    })
 }
+
+//反着排列
+function reverse(){
+    var s=document .getElementById ("filesul");
+    var ss=new Array();
+    for (var i=0;i<s.childNodes.length;i++)
+    {
+      ss[i]=s.childNodes[i].innerHTML;
+    }
+    for (var i=0;i<ss.length;i++)
+    {
+     s.childNodes[i].innerHTML=ss[ss.length-1-i];
+    }
+}
+
+//上传图片
+function uploadFile(){
+            var html = '';
+            var file = document.getElementById("file")
+            var formData = new FormData();
+            for(var i in file.files){//这里如果单张上传就不必遍历直接formData.append('file',file.files[0])
+                    formData.append('file',file.files[i]);
+            }
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    if(200 === data.code) {
+                        $('#result').html("上传成功！");
+                        $('#file').val('');
+                        fileSelect();
+                    } else {
+                        $('#result').html("上传失败！");
+                    }
+                    //console.log('imgUploader upload success');
+                },
+                error: function(){
+                    $("#result").html("与服务器通信发生错误");
+                }
+            });
+        }
+
+function postPage() {
+            var uploada = document.getElementById('upload');
+            uploada.addEventListener("click",function () {
+                uploadFile();
+            },false);
+        }

@@ -4,7 +4,11 @@ li{
 .upimg .files{
 	height: 500px;
 	overflow-y: auto;
+	border-bottom: 1px solid #ddd;
 }
-.upimg input{
-	
+.upimg .w-e-button-container{
+	height: 56px;
+}
+.upimg .w-e-button-container .right{
+	margin-top: 18px;
 }

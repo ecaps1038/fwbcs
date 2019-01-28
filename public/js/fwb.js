@@ -13,10 +13,9 @@
             alert(editor2.txt.text())
         }, false)
         
-        $('body').on('click','.w-e-menu .files',function(){
-            	alert('aaa')
-        })
+        
         window.onload = function () {
+            
         }
     })
 })(jQuery,window,document);

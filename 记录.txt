@@ -1,0 +1,4 @@
+jquery中将以','隔开的数组为数组
+
+var a=link.split(",");
+例：var str = '1122,33445,566';  var s=str.split(',')
