@@ -37,6 +37,44 @@
             },false);
         }
 
+        //获取file内容并管理
+        function fileSent(){
+            var html = '';
+           $.ajax({
+                url: '/showfile',
+                type: 'POST',
+                data: {path:'./public/upload/'},
+                success: function(data){
+                    if(200 === data.code) {
+                        var patt1 = /\.(\w+)/;
+                        data.data.map(function(ver){
+                            var aa = ver.filename.match(patt1)[1];
+                            if(aa == 'jpg' || aa == 'png' || aa == 'jpeg'){
+                            html += '<li><div class="img"><img src="/upload/'+ver.filename+'"/></div>'+
+                                '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                                '<i class="delete"></i><i class="select"></i></li>';
+                            }
+                            if(aa == 'mp4'){
+                                html += '<li><div class="video"><video id="video" src="/upload/'+ver.filename+'" controls="controls"></video></div>'+
+                                '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                                '<i class="delete"></i><i class="select"></i></li>';
+                            }
+                            if(aa == 'doc' || aa == 'docx'){
+                                html += '<li><div class="img"><img src="images/word.png"/></div>'+
+                                '<p data-tile="'+ver.path+ver.filename+'">'+ver.filename+'</p>'+
+                                '<i class="delete"></i><i class="select"></i></li>';
+                            }
+                        })
+                    }
+                    $('.files ul').html(html);
+                    reverse('filesul');
+                },
+                error: function(){
+                    $("#result").html("与服务器通信发生错误");
+                }
+           });
+        }
+
         //删除文件
         function deleteFile(){
             var path = [];
@@ -119,12 +157,26 @@
                 });
             });
         }
+
+        //查看大图片操作
+        function bagPhoto(){
+            var html = '';
+            $('body').on('click','.files img',function(){
+                html = '<img src="'+$(this).attr('src')+'"/>';
+                $('.out .out-img').html(html);
+                $('.out').show();
+            });
+            $('.out-bg').on('click',function(){
+                $('.out').hide();
+            })
+        }
         
         window.onload = function () {
             postPage();
             fileSent();
             deleteFile();
             selectFuc();
+            bagPhoto();
         }
     })
 })(jQuery,window,document);

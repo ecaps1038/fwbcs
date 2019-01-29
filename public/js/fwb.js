@@ -13,9 +13,8 @@
             alert(editor2.txt.text())
         }, false)
         
-        
         window.onload = function () {
-            
+
         }
     })
 })(jQuery,window,document);
